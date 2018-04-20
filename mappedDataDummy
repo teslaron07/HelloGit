@@ -1,0 +1,26 @@
+public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		try {
+			ExcelReader excl = new ExcelReader();
+			Conn = SQLRunner.getSqlConnection();
+			stmt = Conn.createStatement();
+			rs = stmt.executeQuery(sql);
+			// excl.readExcelWorkbook();
+			mappedData = excl.MapColumnToData();
+
+			for (int i = 0; i < mappedData.size(); i++) {
+				while (rs.next()) {
+					if (mappedData.get(i).get("Employee").equals(rs.getString(1))) {
+						System.out.println("Duplicate data exists!!");
+						System.out.println(mappedData.get(i).values());
+					}
+				}
+				rs = stmt.executeQuery(sql);
+				System.out.println("One record inserted");
+			}
+
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+
+	}
