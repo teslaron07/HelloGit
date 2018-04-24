@@ -1,0 +1,73 @@
+// public static void main(String[] args)  
+	public static void search(int columnIndex) 
+	{
+	BasicConfigurator.configure();
+//	int columnIndex=7;
+		try {
+		Conn = SQLRunner.getSqlConnection();
+		stmt = Conn.createStatement();
+		rs = stmt.executeQuery(sql);
+		System.out.println("Inside Method");
+	InputStream is = new FileInputStream(new File(filename));
+	Workbook workbook = StreamingReader.builder()
+	        .rowCacheSize(100)    // number of rows to keep in memory (defaults to 10)
+	        .bufferSize(4096)     // buffer size to use when reading InputStream to file (defaults to 1024)
+	        .open(is);            // InputStream or File for XLSX file (required)
+	
+	System.out.println("The number of sheets present in the workbook: "+workbook.getNumberOfSheets());
+	
+		sheetIterator = workbook.sheetIterator();
+		sheet = workbook.getSheetAt(0);
+		dataFormatter = new DataFormatter();
+		rowIterator = sheet.rowIterator();
+	//	mapobj = new ArrayList<Map<String, String>>();
+		Columns = new ArrayList<String>();
+		int j=0,k=0;
+		while (rowIterator.hasNext()) {
+			Map<String, String> rowData = new HashMap<String, String>();
+			row = rowIterator.next();
+			cellIterator = row.cellIterator();
+			
+			if (row.getRowNum() == 0) {
+				while (cellIterator.hasNext()) {					
+					cell = cellIterator.next();
+					cellValue = dataFormatter.formatCellValue(cell);
+					Columns.add(cellValue);
+				}
+			} else {
+				for (int i = 0; i < row.getLastCellNum(); i++) {
+					//System.out.println(row.getLastCellNum()+" Column No : "+(i+1));
+					cell = cellIterator.next();
+					cellValue = dataFormatter.formatCellValue(cell);
+					rowData.put(Columns.get(i), cellValue);
+				}	
+				while (rs.next()) {
+				
+				//	if (rowData.get(Columns.get(5)).equals(rs.getObject(columnIndex))) 
+						if (rowData.get("STATUS").equals(rs.getObject("STATUS"))) 
+					{
+						j=j+1;
+						System.out.println("Duplicate data exists!!");
+						System.out.println(rowData.values());
+						System.out.println("Duplicate Rows :"+j);
+					}
+					else {
+						k=k+1;
+						System.out.println("Record Inserted: "+k);
+					}					
+				}				
+			}
+			
+			rs = stmt.executeQuery(sql);
+			//rs.beforeFirst();
+		//	rs.first();
+					
+			}
+		
+		workbook.close();
+//	return mapobj;
+	}
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
